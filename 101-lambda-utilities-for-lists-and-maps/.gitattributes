@@ -1,4 +1,4 @@
 text=auto eol=lf
-*.[cC][mM][dD] text eol=crlf
-*.[bB][aA][tT] text eol=crlf
-*.[pP][sS]1 text eol=crlf
+*.[cC][mM][dD] text eol=lf
+*.[bB][aA][tT] text eol=lf
+*.[pP][sS]1 text eol=lf
