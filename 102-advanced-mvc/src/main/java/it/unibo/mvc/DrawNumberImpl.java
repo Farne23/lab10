@@ -8,26 +8,37 @@ import java.util.Random;
 public final class DrawNumberImpl implements DrawNumber {
 
     private int choice;
-    private final int min;
-    private final int max;
-    private final int attempts;
+    //private final int min;
+    //private final int max;
+    //private final int attempts;
     private int remainingAttempts;
     private final Random random = new Random();
+
+    private final Configuration configuration;
 
     /**
      * @throws IllegalStateException if the configuration is not consistent
      */
     public DrawNumberImpl(final int min, final int max, final int attempts) {
-        this.min = min;
-        this.max = max;
-        this.attempts = attempts;
+        var configurationBuilder = new Configuration.Builder();
+        configurationBuilder.setMin(min);
+        configurationBuilder.setMax(max);
+        configurationBuilder.setAttempts(attempts);
+        configuration = configurationBuilder.build();
         this.reset();
     }
 
+    public DrawNumberImpl(String configurationFile) {
+        var configurationBuilder = new Configuration.Builder();
+        configuration = configurationBuilder.buildFromFile(configurationFile);
+        this.reset();
+    }
+
+
     @Override
     public void reset() {
-        this.remainingAttempts = this.attempts;
-        this.choice = this.min + random.nextInt(this.max - this.min + 1);
+        this.remainingAttempts = this.configuration.getAttempts();
+        this.choice = this.configuration.getMin() + random.nextInt(this.configuration.getMax() - this.configuration.getMin() + 1);
     }
 
     @Override
@@ -35,7 +46,7 @@ public final class DrawNumberImpl implements DrawNumber {
         if (this.remainingAttempts <= 0) {
             return DrawResult.YOU_LOST;
         }
-        if (n < this.min || n > this.max) {
+        if (n < this.configuration.getMin() || n > this.configuration.getMax()) {
             throw new IllegalArgumentException("The number is outside boundaries");
         }
         remainingAttempts--;

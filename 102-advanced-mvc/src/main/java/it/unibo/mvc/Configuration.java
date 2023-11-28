@@ -1,5 +1,10 @@
 package it.unibo.mvc;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 /**
  * Encapsulates the concept of configuration.
@@ -108,6 +113,41 @@ public final class Configuration {
             }
             consumed = true;
             return new Configuration(max, min, attempts);
+        }
+
+        public final Configuration buildFromFile(String configurationFilePath) {
+            if (consumed) {
+                throw new IllegalStateException("The builder can only be used once");
+            }
+            consumed = true;
+
+            File configurationFile = new File(configurationFilePath);
+            String line;
+            try (BufferedReader sr = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(configurationFilePath)))) {
+                while((line = sr.readLine()) != null){
+                    setParamterFromYMLString(line);
+                }
+            } catch (Exception e) {
+                throw new IllegalStateException("Builder could not find the  configuration file");
+            }
+            return new Configuration(max, min, attempts);
+        }
+
+        private final void setParamterFromYMLString(String line){
+            StringTokenizer st = new StringTokenizer(line);
+            switch (st.nextToken()){
+                case "minimum":
+                    this.setMin(Integer.parseInt(st.nextToken(line)));
+                    break;
+                case "maximum":
+                    this.setMax(Integer.parseInt(st.nextToken(line)));
+                break;
+                case "attempts":
+                    this.setAttempts(Integer.parseInt(st.nextToken(line)));
+                break;
+                default:
+                break;
+            }
         }
     }
 }
